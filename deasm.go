@@ -22,10 +22,16 @@ type Instruction struct {
 }
 
 type LabelMapStruct struct {
-	m map[int]string
+	m            map[int]string
+	startAddress int
+	endAddress   int
 }
 
 func (l *LabelMapStruct) AddAddress(addr int) {
+	if (addr < l.startAddress) || (addr > l.endAddress) {
+		return
+	}
+
 	_, ok := l.m[addr]
 
 	if !ok {
@@ -33,9 +39,11 @@ func (l *LabelMapStruct) AddAddress(addr int) {
 	}
 }
 
-func NewLabelMapStruct() *LabelMapStruct {
+func NewLabelMapStruct(startAddr, endAddr int) *LabelMapStruct {
 	return &LabelMapStruct{
-		m: make(map[int]string),
+		m:            make(map[int]string),
+		startAddress: startAddr,
+		endAddress:   endAddr,
 	}
 }
 
@@ -65,7 +73,7 @@ type Disassembler struct {
 func NewDisassembler(prog []byte, l uint16, t int) *Disassembler {
 	res := Disassembler{
 		program:      prog,
-		labels:       NewLabelMapStruct(),
+		labels:       NewLabelMapStruct(int(l), int(l)+len(prog)-1),
 		instructions: []Instruction{},
 		addrModes:    []AddrMode{},
 		loadAddress:  l,
@@ -512,7 +520,9 @@ func showVersion() {
 		}
 	}
 
-	fmt.Println("Version: 1.0")
+	fmt.Println("Version: 1.1")
+	fmt.Println("Written by Martin Grap in 2025")
+	fmt.Println("See https://github.com/rmsk2/deasm")
 	fmt.Printf("Commit: %s, from: %s\n", hash, time)
 }
 

@@ -127,10 +127,10 @@ func (a *Asm64tassRenderer) RenderInstruction(i Instruction, labels *LabelMapStr
 	if i.TargetAddr >= 0 {
 		targetLabel, isKnown := labels.m[int(i.TargetAddr)]
 		if !isKnown {
-			return "", fmt.Errorf("no label for target addr: %04x", i.TargetAddr)
+			line += " " + fmt.Sprintf("$%04x", i.TargetAddr)
+		} else {
+			line += " " + targetLabel
 		}
-
-		line += " " + targetLabel
 	}
 
 	if i.Separator {
@@ -186,10 +186,10 @@ func (a *AsmCa65Renderer) RenderInstruction(i Instruction, labels *LabelMapStruc
 	if i.TargetAddr >= 0 {
 		targetLabel, isKnown := labels.m[int(i.TargetAddr)]
 		if !isKnown {
-			return "", fmt.Errorf("no label for target addr: %04x", i.TargetAddr)
+			line += " " + fmt.Sprintf("$%04x", i.TargetAddr)
+		} else {
+			line += " " + targetLabel
 		}
-
-		line += " " + targetLabel
 	}
 
 	if i.Separator {
