@@ -91,6 +91,11 @@ func (d *Disassembler) AddAddressingMode(m AddrMode) {
 
 func (d *Disassembler) ParseBinary(offset uint16) error {
 	d.instructions = make([]Instruction, 0)
+
+	if int(offset) >= len(d.program) {
+		return fmt.Errorf("offset %d larger than overall length of %d", offset, len(d.program))
+	}
+
 	r := NewAddrByteBuffer(d.loadAddress, d.program, offset)
 
 	for {
@@ -522,7 +527,7 @@ func showVersion() {
 		}
 	}
 
-	fmt.Println("Version: 1.1")
+	fmt.Println("Version: 1.1.1")
 	fmt.Println("Written by Martin Grap in 2025")
 	fmt.Println("See https://github.com/rmsk2/deasm")
 	fmt.Printf("Commit: %s, from: %s\n", hash, time)
