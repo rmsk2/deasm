@@ -1,6 +1,6 @@
 # deasm
 A disassembler for the 6502/65C02 microprocessor. `deasm` can be used to either turn an assembly binary into
-source code understood by the `64tass`, `acme` or `ca65` macro assemblers or to simply ivestigate the contents
+source code understood by the `64tass`, `acme` or `ca65` macro assemblers or to simply to investigate the contents
 of such a file. The default output format is called the `monitor` format and looks like this:
 
 ```
