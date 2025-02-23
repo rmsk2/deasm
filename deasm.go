@@ -80,6 +80,8 @@ func NewDisassembler(prog []byte, l uint16, t int) *Disassembler {
 		machineType:  t,
 	}
 
+	res.SetConfig()
+
 	return &res
 }
 
@@ -569,7 +571,6 @@ func main() {
 	}
 
 	disAss := NewDisassembler(progData, loadAddr, machineType)
-	disAss.SetConfig()
 
 	err = disAss.ParseBinary(offset)
 	if err != nil {
