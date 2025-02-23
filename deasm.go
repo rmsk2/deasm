@@ -435,7 +435,7 @@ func (d *Disassembler) SetConfig() {
 	indirectJmp := NewIndirectJmpMode()
 	indirectJmp.AddOpCodeSeparator(0x6c, "jmp")
 
-	absXJmp := NewIndirectJmpMode()
+	absXJmp := NewAbsXJmpMode()
 	absXJmp.AddOpCodeSeparator(0x7c, "jmp")
 
 	d.AddAddressingMode(implicit)
