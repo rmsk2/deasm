@@ -57,4 +57,5 @@ When turning a binary into assembly source code for any of the assemblers mentio
 source code does not compile due to non existing labels. The reason for that is not a deficiency in `deasm` but
 most likely data like lookup tables or sprite defintions which are interpreted as machine code. When such data is
 interpreted as machine code it is possible that the target address of a branch or jump ends up pointing to a byte 
-inside of another instruction. Errors like that have to be resolved manually.
+inside of another instruction which should never happen in a well formed program. Errors like that have to be
+resolved manually.
