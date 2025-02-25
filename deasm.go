@@ -576,7 +576,7 @@ func main() {
 	cpuFlag := runFlags.String("cpu", "65c02", "Processor type: 6502 or 65c02. Optional")
 	formatFlag := runFlags.String("format", "monitor", "Output format: monitor, 64tass, ca65 or acme. Optional")
 	versionFlag := runFlags.Bool("version", false, "Show version information")
-	descFlag := runFlags.String("describe", "", "Print info about menmonic")
+	descFlag := runFlags.String("describe", "", "Print info about mnemonic")
 	var err error = nil
 	var progData []byte
 	var loadAddr uint16
