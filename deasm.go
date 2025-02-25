@@ -562,7 +562,7 @@ func showVersion() {
 		}
 	}
 
-	fmt.Println("Version: 1.1.2")
+	fmt.Println("Version: 1.1.3")
 	fmt.Println("Written by Martin Grap in 2025")
 	fmt.Println("See https://github.com/rmsk2/deasm")
 	fmt.Printf("Commit: %s, from: %s\n", hash, time)
