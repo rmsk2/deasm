@@ -58,21 +58,6 @@ type MenmonicDescription struct {
 	Mode   string
 }
 
-func Describe(i AddrMode, mnemonic string) []MenmonicDescription {
-	res := []MenmonicDescription{}
-
-	for k, j := range i.GetOpCodes() {
-		if strings.HasPrefix(j, mnemonic) {
-			res = append(res, MenmonicDescription{
-				OpCode: k,
-				Mode:   i.GetName(),
-			})
-		}
-	}
-
-	return res
-}
-
 type AddrMode interface {
 	Recognize(opCode byte) bool
 	Parse(opCode byte, addr uint16, r io.ByteReader, l *LabelMapStruct) (Instruction, error)
@@ -181,6 +166,21 @@ func (d *Disassembler) RenderInstructions(w io.Writer, r Renderer, offset uint16
 	return nil
 }
 
+func Describe(i AddrMode, mnemonic string) []MenmonicDescription {
+	res := []MenmonicDescription{}
+
+	for k, j := range i.GetOpCodes() {
+		if strings.HasPrefix(j, mnemonic) {
+			res = append(res, MenmonicDescription{
+				OpCode: k,
+				Mode:   i.GetName(),
+			})
+		}
+	}
+
+	return res
+}
+
 func (d *Disassembler) GetDescription(mnemonic string) {
 	fmt.Printf("Opcodes for instruction %s\n", mnemonic)
 
@@ -201,7 +201,7 @@ func (d *Disassembler) SetConfig() {
 	implicit.AddOpCodeSeparator(0xDB, "stp")
 	implicit.AddOpCode(0x18, "clc")
 	implicit.AddOpCode(0x38, "sec")
-	implicit.AddOpCode(0xb8, "cld")
+	implicit.AddOpCode(0xd8, "cld")
 	implicit.AddOpCode(0xf8, "sed")
 	implicit.AddOpCode(0x58, "cli")
 	implicit.AddOpCode(0x78, "sei")
