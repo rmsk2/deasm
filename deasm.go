@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"runtime/debug"
+	"strings"
 )
 
 const IllegalAddress = -1
@@ -52,9 +53,31 @@ type Renderer interface {
 	RenderHeader(addr uint16, machineType int) string
 }
 
+type MenmonicDescription struct {
+	OpCode byte
+	Mode   string
+}
+
+func Describe(i AddrMode, mnemonic string) []MenmonicDescription {
+	res := []MenmonicDescription{}
+
+	for k, j := range i.GetOpCodes() {
+		if strings.HasPrefix(j, mnemonic) {
+			res = append(res, MenmonicDescription{
+				OpCode: k,
+				Mode:   i.GetName(),
+			})
+		}
+	}
+
+	return res
+}
+
 type AddrMode interface {
 	Recognize(opCode byte) bool
 	Parse(opCode byte, addr uint16, r io.ByteReader, l *LabelMapStruct) (Instruction, error)
+	GetOpCodes() map[byte]string
+	GetName() string
 }
 
 func (a *AddrByteBuffer) GetAddr() uint16 {
@@ -156,6 +179,18 @@ func (d *Disassembler) RenderInstructions(w io.Writer, r Renderer, offset uint16
 	}
 
 	return nil
+}
+
+func (d *Disassembler) GetDescription(mnemonic string) {
+	fmt.Printf("Opcodes for instruction %s\n", mnemonic)
+
+	for _, j := range d.addrModes {
+		h := Describe(j, mnemonic)
+
+		for _, k := range h {
+			fmt.Printf("    $%02X: %s\n", k.OpCode, k.Mode)
+		}
+	}
 }
 
 func (d *Disassembler) SetConfig() {
@@ -541,6 +576,7 @@ func main() {
 	cpuFlag := runFlags.String("cpu", "65c02", "Processor type: 6502 or 65c02. Optional")
 	formatFlag := runFlags.String("format", "monitor", "Output format: monitor, 64tass, ca65 or acme. Optional")
 	versionFlag := runFlags.Bool("version", false, "Show version information")
+	descFlag := runFlags.String("describe", "", "Print info about menmonic")
 	var err error = nil
 	var progData []byte
 	var loadAddr uint16
@@ -557,6 +593,12 @@ func main() {
 	var offset = uint16(*offsetBytes)
 	var machineType int = makeMachineType(cpuFlag)
 	var renderer Renderer = makeRenderer(formatFlag)
+
+	if *descFlag != "" {
+		dummy := NewDisassembler(nil, 0, CPU65C02)
+		dummy.GetDescription(*descFlag)
+		os.Exit(0)
+	}
 
 	if *binaryFileName == "" {
 		fmt.Println("No program name given")

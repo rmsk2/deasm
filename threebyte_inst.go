@@ -11,10 +11,19 @@ type ThreeByteInstruction struct {
 	opCodes          map[byte]string
 	separatorOpCodes map[byte]bool
 	formatter        ThreeByteFormatterFunc
+	name             string
 }
 
 func (t *ThreeByteInstruction) AddOpCode(o byte, mnemonic string) {
 	t.opCodes[o] = mnemonic
+}
+
+func (t *ThreeByteInstruction) GetName() string {
+	return t.name
+}
+
+func (t *ThreeByteInstruction) GetOpCodes() map[byte]string {
+	return t.opCodes
 }
 
 func makeAddr[V int | uint16](oper1, oper2 byte) V {
@@ -26,11 +35,12 @@ func (t *ThreeByteInstruction) AddOpCodeSeparator(o byte, mnemonic string) {
 	t.separatorOpCodes[o] = true
 }
 
-func NewThreeByteMode(f ThreeByteFormatterFunc) *ThreeByteInstruction {
+func NewThreeByteMode(f ThreeByteFormatterFunc, n string) *ThreeByteInstruction {
 	return &ThreeByteInstruction{
 		opCodes:          make(map[byte]string),
 		separatorOpCodes: make(map[byte]bool),
 		formatter:        f,
+		name:             n,
 	}
 }
 
@@ -39,7 +49,7 @@ func NewAbsoluteMode() *ThreeByteInstruction {
 		return fmt.Sprintf("%s $%04x", m, makeAddr[uint16](oper1, oper2)), IllegalAddress
 	}
 
-	return NewThreeByteMode(f)
+	return NewThreeByteMode(f, "Absolute")
 }
 
 func NewAbsoluteXMode() *ThreeByteInstruction {
@@ -47,7 +57,7 @@ func NewAbsoluteXMode() *ThreeByteInstruction {
 		return fmt.Sprintf("%s $%04x,x", m, makeAddr[uint16](oper1, oper2)), IllegalAddress
 	}
 
-	return NewThreeByteMode(f)
+	return NewThreeByteMode(f, "Absolute, x")
 }
 
 func NewAbsoluteYMode() *ThreeByteInstruction {
@@ -55,7 +65,7 @@ func NewAbsoluteYMode() *ThreeByteInstruction {
 		return fmt.Sprintf("%s $%04x,y", m, makeAddr[uint16](oper1, oper2)), IllegalAddress
 	}
 
-	return NewThreeByteMode(f)
+	return NewThreeByteMode(f, "Absolute, y")
 }
 
 func NewAbsoluteJmpMode() *ThreeByteInstruction {
@@ -63,7 +73,7 @@ func NewAbsoluteJmpMode() *ThreeByteInstruction {
 		return m, makeAddr[int](oper1, oper2)
 	}
 
-	return NewThreeByteMode(f)
+	return NewThreeByteMode(f, "Absolute")
 }
 
 func NewIndirectJmpMode() *ThreeByteInstruction {
@@ -71,7 +81,7 @@ func NewIndirectJmpMode() *ThreeByteInstruction {
 		return fmt.Sprintf("%s ($%04x)", m, makeAddr[uint16](oper1, oper2)), IllegalAddress
 	}
 
-	return NewThreeByteMode(f)
+	return NewThreeByteMode(f, "Indirect")
 }
 
 func NewRelativeRockwell() *ThreeByteInstruction {
@@ -81,7 +91,7 @@ func NewRelativeRockwell() *ThreeByteInstruction {
 		return fmt.Sprintf("%s, $%02x,", m, oper1), int(uint16((int16(addr) + 3 + int16(offset))))
 	}
 
-	return NewThreeByteMode(f)
+	return NewThreeByteMode(f, "Relative")
 }
 
 func NewAbsXJmpMode() *ThreeByteInstruction {
@@ -89,7 +99,7 @@ func NewAbsXJmpMode() *ThreeByteInstruction {
 		return fmt.Sprintf("%s ($%04x,x)", m, makeAddr[uint16](oper1, oper2)), IllegalAddress
 	}
 
-	return NewThreeByteMode(f)
+	return NewThreeByteMode(f, "Indirect absolute, x")
 }
 
 func (t *ThreeByteInstruction) Recognize(opCode byte) bool {

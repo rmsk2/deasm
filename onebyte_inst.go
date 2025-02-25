@@ -26,6 +26,14 @@ func NewImplicitMode() *ImplictMode {
 	}
 }
 
+func (i *ImplictMode) GetName() string {
+	return "Implicit"
+}
+
+func (i *ImplictMode) GetOpCodes() map[byte]string {
+	return i.opCodes
+}
+
 func (i *ImplictMode) Recognize(opCode byte) bool {
 	_, ok := i.opCodes[opCode]
 

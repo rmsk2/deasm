@@ -11,6 +11,7 @@ type TwoByteInstruction struct {
 	opCodes          map[byte]string
 	separatorOpCodes map[byte]bool
 	formatter        TwoByteFormatterFunc
+	name             string
 }
 
 func (t *TwoByteInstruction) AddOpCode(o byte, mnemonic string) {
@@ -22,11 +23,20 @@ func (t *TwoByteInstruction) AddOpCodeSeparator(o byte, mnemonic string) {
 	t.separatorOpCodes[o] = true
 }
 
-func NewTwoByteMode(f TwoByteFormatterFunc) *TwoByteInstruction {
+func (t *TwoByteInstruction) GetName() string {
+	return t.name
+}
+
+func (t *TwoByteInstruction) GetOpCodes() map[byte]string {
+	return t.opCodes
+}
+
+func NewTwoByteMode(f TwoByteFormatterFunc, n string) *TwoByteInstruction {
 	return &TwoByteInstruction{
 		opCodes:          make(map[byte]string),
 		separatorOpCodes: make(map[byte]bool),
 		formatter:        f,
+		name:             n,
 	}
 }
 
@@ -35,7 +45,7 @@ func NewImmediateMode() *TwoByteInstruction {
 		return fmt.Sprintf("%s #$%02x", m, oper), IllegalAddress
 	}
 
-	return NewTwoByteMode(f)
+	return NewTwoByteMode(f, "Immediate")
 }
 
 func NewZeroPage() *TwoByteInstruction {
@@ -43,7 +53,7 @@ func NewZeroPage() *TwoByteInstruction {
 		return fmt.Sprintf("%s $%02x", m, oper), IllegalAddress
 	}
 
-	return NewTwoByteMode(f)
+	return NewTwoByteMode(f, "Zero page")
 }
 
 func NewZeroPageX() *TwoByteInstruction {
@@ -51,7 +61,7 @@ func NewZeroPageX() *TwoByteInstruction {
 		return fmt.Sprintf("%s $%02x,x", m, oper), IllegalAddress
 	}
 
-	return NewTwoByteMode(f)
+	return NewTwoByteMode(f, "Zero page, x")
 }
 
 func NewZeroPageY() *TwoByteInstruction {
@@ -59,7 +69,7 @@ func NewZeroPageY() *TwoByteInstruction {
 		return fmt.Sprintf("%s $%02x,y", m, oper), IllegalAddress
 	}
 
-	return NewTwoByteMode(f)
+	return NewTwoByteMode(f, "Zero page, y")
 }
 
 func NewIndirectY() *TwoByteInstruction {
@@ -67,7 +77,7 @@ func NewIndirectY() *TwoByteInstruction {
 		return fmt.Sprintf("%s ($%02x),y", m, oper), IllegalAddress
 	}
 
-	return NewTwoByteMode(f)
+	return NewTwoByteMode(f, "Indirect, y")
 }
 
 func NewIndirectX() *TwoByteInstruction {
@@ -75,7 +85,7 @@ func NewIndirectX() *TwoByteInstruction {
 		return fmt.Sprintf("%s ($%02x,x)", m, oper), IllegalAddress
 	}
 
-	return NewTwoByteMode(f)
+	return NewTwoByteMode(f, "Indirect, x")
 }
 
 func NewZPIndirect() *TwoByteInstruction {
@@ -83,7 +93,7 @@ func NewZPIndirect() *TwoByteInstruction {
 		return fmt.Sprintf("%s ($%02x)", m, oper), IllegalAddress
 	}
 
-	return NewTwoByteMode(f)
+	return NewTwoByteMode(f, "Zero page indirect")
 }
 
 func NewRelative() *TwoByteInstruction {
@@ -93,7 +103,7 @@ func NewRelative() *TwoByteInstruction {
 		return m, int(uint16((int16(addr) + 2 + int16(offset))))
 	}
 
-	return NewTwoByteMode(f)
+	return NewTwoByteMode(f, "Relative")
 }
 
 func (t *TwoByteInstruction) Recognize(opCode byte) bool {
