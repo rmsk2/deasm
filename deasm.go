@@ -53,7 +53,7 @@ type Renderer interface {
 	RenderHeader(addr uint16, machineType int) string
 }
 
-type MenmonicDescription struct {
+type MnemonicDescription struct {
 	OpCode byte
 	Mode   string
 }
@@ -166,12 +166,12 @@ func (d *Disassembler) RenderInstructions(w io.Writer, r Renderer, offset uint16
 	return nil
 }
 
-func Describe(i AddrMode, mnemonic string) []MenmonicDescription {
-	res := []MenmonicDescription{}
+func describe(i AddrMode, mnemonic string) []MnemonicDescription {
+	res := []MnemonicDescription{}
 
 	for k, j := range i.GetOpCodes() {
 		if strings.HasPrefix(j, mnemonic) {
-			res = append(res, MenmonicDescription{
+			res = append(res, MnemonicDescription{
 				OpCode: k,
 				Mode:   i.GetName(),
 			})
@@ -181,11 +181,11 @@ func Describe(i AddrMode, mnemonic string) []MenmonicDescription {
 	return res
 }
 
-func (d *Disassembler) GetDescription(mnemonic string) {
+func (d *Disassembler) PrintDescription(mnemonic string) {
 	fmt.Printf("Opcodes for instruction %s\n", mnemonic)
 
 	for _, j := range d.addrModes {
-		h := Describe(j, mnemonic)
+		h := describe(j, mnemonic)
 
 		for _, k := range h {
 			fmt.Printf("    $%02X: %s\n", k.OpCode, k.Mode)
@@ -595,8 +595,8 @@ func main() {
 	var renderer Renderer = makeRenderer(formatFlag)
 
 	if *descFlag != "" {
-		dummy := NewDisassembler(nil, 0, CPU65C02)
-		dummy.GetDescription(*descFlag)
+		dummy := NewDisassembler(nil, 0, machineType)
+		dummy.PrintDescription(*descFlag)
 		os.Exit(0)
 	}
 
